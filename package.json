@@ -1,0 +1,24 @@
+{
+  "name": "react-model",
+  "version": "1.0.0",
+  "description": "The missing Model for React.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/bbtfr/react-model.git"
+  },
+  "keywords": [
+    "react",
+    "model",
+    "collection"
+  ],
+  "author": "Theo Li",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bbtfr/react-model/issues"
+  },
+  "homepage": "https://github.com/bbtfr/react-model#readme"
+}
