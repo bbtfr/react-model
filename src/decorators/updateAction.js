@@ -1,15 +1,21 @@
 import getUpdateConstant from '../utils/getUpdateConstant'
 
-export default function updateAction(target, key, descriptor) {
-  const updateMethod = descriptor.value
+export function updateMethodDecorator(updateMethod) {
+  return function() {
+    if (this.dispatch) {
+      const UPDATE = getUpdateConstant(this.constructor)
 
-  descriptor.value = function() {
-    const UPDATE = getUpdateConstant(this.constructor)
-
-    const result = updateMethod.apply(this, arguments)
-    this.dispatch({ type: UPDATE, data: this })
-    return result
+      let next = this.clone()
+      const result = updateMethod.apply(next, arguments)
+      this.dispatch({ type: UPDATE, next })
+      return result
+    } else {
+      return updateMethod.apply(this, arguments)
+    }
   }
+}
 
+export default function updateAction(target, key, descriptor) {
+  descriptor.value = updateMethodDecorator(descriptor.value)
   return descriptor
 }

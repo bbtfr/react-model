@@ -82,3 +82,8 @@ render((
 
 
 ```
+
+Comparison with Backbone
+---
+
+See [Backbone like methods for Collection & Model](https://github.com/bbtfr/react-model/issues/1)

@@ -1,9 +1,9 @@
-import _ from 'lodash'
+import lodash from 'lodash'
 import fetch from 'isomorphic-fetch'
 
 import ajaxAction from './decorators/ajaxAction'
-import updateAction from './decorators/updateAction'
-import cloneInstance from './utils/cloneInstance'
+import updateAction, { updateMethodDecorator } from './decorators/updateAction'
+import { cloneInstance, cloneInstanceFrom } from './utils/cloneInstance'
 
 export default class Model {
 
@@ -14,8 +14,6 @@ export default class Model {
   reset(attributes) {
     this.attributes = attributes
   }
-
-  idAttribute = "id"
 
   id() {
     return this.attributes[this.idAttribute]
@@ -34,7 +32,7 @@ export default class Model {
   @ajaxAction
   sync() {
     const method = this.isNew() ? 'post' : 'put'
-    const url = _.result(this.url)
+    const url = lodash.result(this.url)
     return fetch(this.url, { method: method }).then(this.parse)
   }
 
@@ -44,16 +42,16 @@ export default class Model {
 
 }
 
-function bindLodashFunctions(...names) {
-  for (let name of names) {
-    Model.prototype[name] = function() {
-      return _[name].call(this, this.attributes, ...arguments)
-    }
-  }
-}
 
-bindLodashFunctions("keys", "values", "pairs", "invert", "pick", "omit",
-  "chain", "isEmpty", "get", "has")
+lodash.forEach([
+  "keys", "values", "pairs", "invert", "pick", "omit", "chain", "isEmpty",
+  "get", "has"
+], function(name) {
+  Model.prototype[name] = function() {
+    return lodash[name](this.attributes, ...arguments)
+  }
+})
 
 Model.prototype.clone = cloneInstance
-Model.prototype.dispatch = _.noop
+Model.prototype.cloneFrom = cloneInstanceFrom
+Model.prototype.idAttribute = "id"
