@@ -27,6 +27,13 @@ export default class Collection {
     return model
   }
 
+  @updateAction
+  create(model) {
+    model = this.new(model)
+    this.models.push(model)
+    model.sync()
+  }
+
   modelId(model) {
     return model instanceof this.model ? model.id :
       model[this.model.prototype.idAttribute]

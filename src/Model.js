@@ -10,17 +10,40 @@ export default class Model {
 
   constructor(attributes = {}) {
     this.reset(attributes)
+    this.resetPreviousAttributes()
   }
 
   isNew() {
     return !!this.id
   }
 
+  isValid() {
+    return this.validate ? this.validationError = this.validate() : true
+  }
+
   @updateAction
   @keepWithoutDispatchMethod
   reset(attributes) {
-    this.attributes = attributes
+    this.attributes = _.assign({}, this.defaults, attributes)
     this.id = attributes[this.idAttribute]
+    this.changed = true
+  }
+
+  resetPreviousAttributes() {
+    this.previousAttributes = _.clone(this.attributes)
+    this.changed = false
+  }
+
+  previous(key) {
+    return _.get(this.previousAttributes, key)
+  }
+
+  hasChanged(key) {
+    return !_.isEqual(this.previous(key), this.get(key))
+  }
+
+  changedAttributes() {
+    return this.keys().filter(key => this.hasChanged(key))
   }
 
   url() {
@@ -29,10 +52,25 @@ export default class Model {
   }
 
   @ajaxAction
-  sync() {
+  fetch() {
+    this.resetPreviousAttributes()
+    return fetch(_.result(this.url))
+      .then(this.parse)
+  }
+
+  @ajaxAction
+  save() {
+    this.resetPreviousAttributes()
     const method = this.isNew() ? 'post' : 'put'
-    const url = _.result(this.url)
-    return fetch(this.url, { method: method }).then(this.parse)
+    return fetch(_.result(this.url), { method: method })
+      .then(this.parse)
+  }
+
+  @ajaxAction
+  destroy() {
+    this.resetPreviousAttributes()
+    return fetch(_.result(this.url), { method: 'delete' })
+      .then(this.parse)
   }
 
   parse(response) {
@@ -66,4 +104,6 @@ _.forEach([
 Model.prototype.clone = cloneInstance
 Model.prototype.cloneFrom = cloneInstanceFrom
 Model.prototype.clear = _.partial(Model.prototype.reset, {})
+Model.prototype.sync = Model.prototype.save
 Model.prototype.idAttribute = "id"
+Model.prototype.defaults = {}

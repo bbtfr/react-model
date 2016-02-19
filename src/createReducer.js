@@ -17,18 +17,18 @@ export default function createReducer(Collection) {
         return state
 
       case COLLECTION_FETCH.AJAX_REQUEST:
-        next.loading = true
-        delete next.error
+        next.state = 'loading'
+        delete next.loadError
         return next
 
       case COLLECTION_FETCH.AJAX_SUCCESS:
+        next.state = 'loaded'
         next.resetWithoutDispatch(data)
-        next.loading = false
         return next
 
       case COLLECTION_FETCH.AJAX_FAILURE:
-        next.loading = false
-        next.error = error
+        next.state = 'loadFailed'
+        next.loadError = error
         return next
 
       case COLLECTION_UPDATE:
