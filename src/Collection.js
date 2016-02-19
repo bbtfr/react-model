@@ -1,8 +1,9 @@
-import lodash from 'lodash'
+import _ from 'lodash'
 import fetch from 'isomorphic-fetch'
 
 import Model from './Model'
 import ajaxAction from './decorators/ajaxAction'
+import keepWithoutDispatchMethod from './decorators/keepWithoutDispatchMethod'
 import updateAction, { updateMethodDecorator } from './decorators/updateAction'
 import { cloneInstance, cloneInstanceFrom } from './utils/cloneInstance'
 
@@ -19,55 +20,101 @@ export default class Collection {
     }
   }
 
-  create(model) {
-    return model instanceof this.model ? model : new this.model(model)
+  new(model) {
+    model = model instanceof this.model ? model : new this.model(model)
+    if (!model.cid) model.cid = _.uniqueId('c')
+    model.dispatch = this.dispatch
+    return model
+  }
+
+  modelId(model) {
+    return model instanceof this.model ? model.id :
+      model[this.model.prototype.idAttribute]
   }
 
   @updateAction
-  reset(models) {
-    this.resetWithoutDispatch(models)
+  @keepWithoutDispatchMethod
+  sort() {
+    this.resetWithoutDispatch(this.sortBy(this.comparator))
   }
 
-  resetWithoutDispatch(models) {
-    this.models = lodash.map(models, model => this.create(model))
+  @updateAction
+  add(...models) {
+    this.resetWithoutDispatch(_.concat(this.models, ...models))
+    this.sortWithoutDispatch()
+  }
+
+  has(id) {
+    return !!this.get(id)
+  }
+
+  get(id) {
+    return this.find({ id: id }) || this.find({ cid: id })
+  }
+
+  getIndex(id) {
+    let index = this.findIndex({ id: id })
+    if (index < 0) index = this.findIndex({ cid: id })
+    return index
+  }
+
+  @updateAction
+  @keepWithoutDispatchMethod
+  set(id, model) {
+    const index = this.getIndex(id)
+    if (index >= 0) {
+      this.models[index] = this.new(model)
+    }
+  }
+
+  @updateAction
+  @keepWithoutDispatchMethod
+  remove(id) {
+    const index = this.getIndex(id)
+    if (index >= 0) this.models.splice(index, 1)
+  }
+
+  @updateAction
+  @keepWithoutDispatchMethod
+  reset(models) {
+    this.models = _.map(models, model => this.new(model))
   }
 
   @ajaxAction
   fetch() {
     return fetch(this.url)
       .then(this.parse)
-      .then(data => (this.resetWithoutDispatch(data), data))
+  }
+
+  sync() {
+    this.forEach(model => model.sync())
   }
 
   parse(response) {
     return response.json()
   }
+
+  toJSON() {
+    return this.map(model => model.toJSON());
+  }
 }
 
-lodash.forEach([
+_.forEach([
   "forEach", "each", "map", "collect", "reduce", "foldl", "inject",
   "reduceRight", "foldr", "find", "detect", "filter", "select", "reject",
   "every", "all", "some", "any", "contains", "includes", "invoke", "max", "min",
   "sortBy", "groupBy", "shuffle", "toArray", "size", "first", "head", "take",
   "initial", "rest", "tail", "drop", "last", "without", "indexOf",
   "lastIndexOf", "isEmpty", "chain", "difference", "sample", "partition",
-  "countBy", "indexBy", "get", "at", "slice"
+  "countBy", "indexBy", "at", "slice", "findIndex"
 ], function(name) {
   Collection.prototype[name] = function() {
-    return lodash[name](this.models, ...arguments)
+    return _[name](this.models, ...arguments)
   }
 })
 
-lodash.forEach([
-  "concat", "remove", "set"
-], function(name) {
-  Collection.prototype[name] = updateMethodDecorator(function() {
-    return this.resetWithoutDispatch(lodash[name](this.models, ...arguments))
-  })
-})
-
-lodash.forEach([
-  "push", "pop", "unshift", "shift"
+_.forEach([
+  "concat", "splice", "push", "pop", "unshift", "shift"
 ], function(name) {
   Collection.prototype[name] = updateMethodDecorator(function() {
     const models = this.models.slice()
@@ -78,5 +125,6 @@ lodash.forEach([
 
 Collection.prototype.clone = cloneInstance
 Collection.prototype.cloneFrom = cloneInstanceFrom
-Collection.prototype.add = Collection.prototype.concat
 Collection.prototype.pluck = Collection.prototype.map
+Collection.prototype.where = Collection.prototype.filter
+Collection.prototype.findWhere = Collection.prototype.find

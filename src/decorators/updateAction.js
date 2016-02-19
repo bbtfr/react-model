@@ -7,7 +7,7 @@ export function updateMethodDecorator(updateMethod) {
 
       let next = this.clone()
       const result = updateMethod.apply(next, arguments)
-      this.dispatch({ type: UPDATE, next })
+      this.dispatch({ type: UPDATE, prev: this, next })
       return result
     } else {
       return updateMethod.apply(this, arguments)
