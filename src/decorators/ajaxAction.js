@@ -6,10 +6,10 @@ export function ajaxMethodDecorator(ajaxMethod, key) {
       const { AJAX_REQUEST, AJAX_SUCCESS, AJAX_FAILURE } =
       getAjaxConstants(this.constructor, key)
 
-      this.dispatch({ type: AJAX_REQUEST, next: this.clone() })
+      this.dispatch({ type: AJAX_REQUEST, next: this.clone(), key })
       return ajaxMethod.apply(this, arguments)
-        .then(data => this.dispatch({ type: AJAX_SUCCESS, next: this.clone(), data }))
-        .catch(error => this.dispatch({ type: AJAX_FAILURE, next: this.clone(), error }))
+        .then(data => this.dispatch({ type: AJAX_SUCCESS, next: this.clone(), key, data }))
+        .catch(error => this.dispatch({ type: AJAX_FAILURE, next: this.clone(), key, error }))
     } else {
       return ajaxMethod.apply(this, arguments)
     }

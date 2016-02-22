@@ -47,29 +47,29 @@ export default class Model {
   }
 
   url() {
-    const urlRoot = _.result(this.urlRoot)
-    return this.id ? `${urlRoot}/${this.id}` : urlRoot
+    const { id, urlRoot } = this
+    return id ? `${urlRoot}/${id}` : urlRoot
   }
 
   @ajaxAction
   fetch() {
     this.resetPreviousAttributes()
-    return fetch(_.result(this.url))
+    return fetch(this.url())
       .then(this.parse)
   }
 
   @ajaxAction
-  save() {
+  sync() {
     this.resetPreviousAttributes()
     const method = this.isNew() ? 'post' : 'put'
-    return fetch(_.result(this.url), { method: method })
+    return fetch(this.url(), { method: method })
       .then(this.parse)
   }
 
   @ajaxAction
   destroy() {
     this.resetPreviousAttributes()
-    return fetch(_.result(this.url), { method: 'delete' })
+    return fetch(this.url(), { method: 'delete' })
       .then(this.parse)
   }
 
@@ -104,6 +104,6 @@ _.forEach([
 Model.prototype.clone = cloneInstance
 Model.prototype.cloneFrom = cloneInstanceFrom
 Model.prototype.clear = _.partial(Model.prototype.reset, {})
-Model.prototype.sync = Model.prototype.save
+Model.prototype.save = Model.prototype.sync
 Model.prototype.idAttribute = "id"
 Model.prototype.defaults = {}

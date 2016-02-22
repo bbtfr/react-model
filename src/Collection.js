@@ -23,6 +23,7 @@ export default class Collection {
   new(model) {
     model = model instanceof this.model ? model : new this.model(model)
     if (!model.cid) model.cid = _.uniqueId('c')
+    model.rid = this.rid
     model.dispatch = this.dispatch
     return model
   }
