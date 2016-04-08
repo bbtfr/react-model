@@ -14,7 +14,7 @@ export default class Model {
   }
 
   isNew() {
-    return !!this.id
+    return !this.id
   }
 
   isValid() {
@@ -48,7 +48,7 @@ export default class Model {
 
   url() {
     const { id, urlRoot } = this
-    return id ? `${urlRoot}/${id}` : urlRoot
+    return urlRoot && (id ? `${urlRoot}/${id}` : urlRoot)
   }
 
   @ajaxAction

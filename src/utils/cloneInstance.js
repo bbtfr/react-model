@@ -1,13 +1,15 @@
 export function cloneInstance() {
-  let newInstance = new this.constructor()
+  let clone = new this.constructor()
   for (let property of Object.getOwnPropertyNames(this)) {
-    newInstance[property] = this[property]
+    clone[property] = this[property]
   }
-  return newInstance
+  if (clone.models) clone.models = clone.models.slice()
+  return clone
 }
 
 export function cloneInstanceFrom(source) {
   for (let property of Object.getOwnPropertyNames(source)) {
     this[property] = source[property]
   }
+  if (this.models) this.models = this.models.slice()
 }

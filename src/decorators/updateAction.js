@@ -1,13 +1,13 @@
 import getUpdateConstant from '../utils/getUpdateConstant'
 
-export function updateMethodDecorator(updateMethod) {
+export function updateMethodDecorator(updateMethod, key) {
   return function() {
     if (this.dispatch) {
       const UPDATE = getUpdateConstant(this.constructor)
 
-      let next = this.clone()
-      const result = updateMethod.apply(next, arguments)
-      this.dispatch({ type: UPDATE, prev: this, next })
+      let data = this.clone()
+      const result = updateMethod.apply(data, arguments)
+      this.dispatch({ type: UPDATE, data })
       return result
     } else {
       return updateMethod.apply(this, arguments)
@@ -16,6 +16,6 @@ export function updateMethodDecorator(updateMethod) {
 }
 
 export default function updateAction(target, key, descriptor) {
-  descriptor.value = updateMethodDecorator(descriptor.value)
+  descriptor.value = updateMethodDecorator(descriptor.value, key)
   return descriptor
 }

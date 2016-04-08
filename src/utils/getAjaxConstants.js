@@ -9,5 +9,5 @@ export default function getAjaxConstants(Class, action) {
   const AJAX_SUCCESS = `${PREFIX}_${ACTION}_SUCCESS`
   const AJAX_FAILURE = `${PREFIX}_${ACTION}_FAILURE`
 
-  return { AJAX_REQUEST, AJAX_SUCCESS, AJAX_FAILURE }
+  return { AJAX_REQUEST, AJAX_SUCCESS, AJAX_FAILURE, action }
 }
