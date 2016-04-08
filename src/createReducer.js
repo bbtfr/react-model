@@ -1,30 +1,44 @@
-import _ from 'lodash'
+import Collection from './Collection'
 
 import getAjaxConstants from './utils/getAjaxConstants'
 import getUpdateConstant from './utils/getUpdateConstant'
+import UniqueID from './utils/UniqueID'
 
-function handleModelUpdate(model, collection) {
+function handleModelUpdate(collection, model) {
   collection = collection.clone()
-  collection.setWithoutDispatch(model.cid, model)
+  collection.setWithoutDispatch(model.__collectionID, model)
   return collection
 }
 
-function handleAjaxAction(CONSTANTS, action) {
-  const { type, key, next, data, error } = action
+function handleCollectionUpdate(collection, models) {
+  if (models instanceof Collection) {
+    return models
+  } else {
+    collection = collection.clone()
+    collection.resetWithoutDispatch(models)
+    return collection
+  }
+}
+
+function handleAjaxAction(state, action, CONSTANTS) {
+  const { type, data, error } = action
+  let next
 
   switch (type) {
     case CONSTANTS.AJAX_REQUEST:
-      next.loadingState = `${key}Request`
+      next = state.clone()
+      next.loadingState = `${CONSTANTS.action}Request`
       delete next.loadingError
       return next
 
     case CONSTANTS.AJAX_SUCCESS:
-      next.loadingState = `${key}Success`
-      next.resetWithoutDispatch(data)
+      next = handleCollectionUpdate(state, data)
+      next.loadingState = `${CONSTANTS.action}Success`
       return next
 
     case CONSTANTS.AJAX_FAILURE:
-      next.loadingState = `${key}Failure`
+      next = state.clone()
+      next.loadingState = `${CONSTANTS.action}Failure`
       next.loadingError = error
       return next
   }
@@ -33,7 +47,7 @@ function handleAjaxAction(CONSTANTS, action) {
 export default function createReducer(Collection) {
   const initialState = new Collection()
   const Model = initialState.model
-  const rid = initialState.rid = _.uniqueId('r')
+  const reducerID = initialState.__reducerID = new UniqueID()
 
   const COLLECTION_FETCH = getAjaxConstants(Collection, "fetch")
   const COLLECTION_UPDATE = getUpdateConstant(Collection)
@@ -42,32 +56,32 @@ export default function createReducer(Collection) {
   const MODEL_UPDATE = getUpdateConstant(Model)
 
   return function(state = initialState, action) {
-    const { type, next } = action
+    const { type, data } = action
 
-    if (next && next.rid !== rid) return state
+    if (state && state.__reducerID !== reducerID) return state
 
     switch (type) {
       case 'INIT_DISPATCH':
-        state.dispatch = action.dispatch
+        state.__dispatch = action.dispatch
         return state
 
       case COLLECTION_UPDATE:
-        return next
+        return handleCollectionUpdate(state, data)
 
       case MODEL_UPDATE:
-        return handleModelUpdate(next, state)
+        return handleModelUpdate(state, data)
 
       default:
-        let nextState
+        let next
 
         // Collection fetch
-        nextState = handleAjaxAction(COLLECTION_FETCH, action)
-        if (nextState) return nextState
+        next = handleAjaxAction(state, action, COLLECTION_FETCH)
+        if (next) return next
 
         // Model fetch
-        nextState = handleAjaxAction(MODEL_FETCH, action) ||
-          handleAjaxAction(MODEL_SYNC, action)
-        if (nextState) return handleModelUpdate(nextState, state)
+        next = handleAjaxAction(state, action, MODEL_FETCH) ||
+          handleAjaxAction(state, action, MODEL_SYNC)
+        if (next) return handleModelUpdate(state, next)
     }
 
     return state

@@ -2,17 +2,13 @@ import getAjaxConstants from '../utils/getAjaxConstants'
 
 export function ajaxMethodDecorator(ajaxMethod, key) {
   return function() {
-    if (this.dispatch) {
-      const { AJAX_REQUEST, AJAX_SUCCESS, AJAX_FAILURE } =
+    const { AJAX_REQUEST, AJAX_SUCCESS, AJAX_FAILURE } =
       getAjaxConstants(this.constructor, key)
 
-      this.dispatch({ type: AJAX_REQUEST, next: this.clone(), key })
-      return ajaxMethod.apply(this, arguments)
-        .then(data => this.dispatch({ type: AJAX_SUCCESS, next: this.clone(), key, data }))
-        .catch(error => this.dispatch({ type: AJAX_FAILURE, next: this.clone(), key, error }))
-    } else {
-      return ajaxMethod.apply(this, arguments)
-    }
+    this.__dispatch({ type: AJAX_REQUEST })
+    return ajaxMethod.apply(this, arguments)
+      .then(data => this.__dispatch({ type: AJAX_SUCCESS, data }))
+      .catch(error => this.__dispatch({ type: AJAX_FAILURE, error }))
   }
 }
 

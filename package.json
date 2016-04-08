@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/bbtfr/react-model#readme",
   "dependencies": {
+    "immutable": "^3.7.6",
     "lodash": "^4.3.0"
   },
   "devDependencies": {
