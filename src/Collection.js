@@ -131,6 +131,7 @@ _.forEach([
   })
 })
 
+Collection.prototype.isCollection = true
 Collection.prototype.clone = cloneInstance
 Collection.prototype.cloneFrom = cloneInstanceFrom
 Collection.prototype.pluck = Collection.prototype.map

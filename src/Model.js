@@ -101,6 +101,7 @@ _.forEach([
   })
 })
 
+Model.prototype.isModel = true
 Model.prototype.clone = cloneInstance
 Model.prototype.cloneFrom = cloneInstanceFrom
 Model.prototype.clear = _.partial(Model.prototype.reset, {})

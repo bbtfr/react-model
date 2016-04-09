@@ -5,9 +5,9 @@ export function ajaxMethodDecorator(ajaxMethod, key) {
     if (this.dispatch) {
       const { AJAX_REQUEST, AJAX_SUCCESS, AJAX_FAILURE } =
         getAjaxConstants(this.constructor, key)
-      const cid = this.cid
 
-      if (cid) {
+      if (this.isModel) {
+        const cid = this.cid
         this.dispatch({ type: AJAX_REQUEST, cid })
         return ajaxMethod.apply(this, arguments)
           .then(data => this.dispatch({ type: AJAX_SUCCESS, data, cid }))

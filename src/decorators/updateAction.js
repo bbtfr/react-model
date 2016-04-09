@@ -1,6 +1,6 @@
 import getUpdateConstant from '../utils/getUpdateConstant'
 
-export function updateMethodDecorator(updateMethod, key) {
+export function updateMethodDecorator(updateMethod) {
   return function() {
     if (this.dispatch) {
       const UPDATE = getUpdateConstant(this.constructor)
@@ -16,6 +16,6 @@ export function updateMethodDecorator(updateMethod, key) {
 }
 
 export default function updateAction(target, key, descriptor) {
-  descriptor.value = updateMethodDecorator(descriptor.value, key)
+  descriptor.value = updateMethodDecorator(descriptor.value)
   return descriptor
 }

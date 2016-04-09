@@ -1,9 +1,8 @@
-import toUpper from 'lodash/toUpper'
-import snakeCase from 'lodash/snakeCase'
+import _ from 'lodash'
 
 export default function getAjaxConstants(Class, action) {
-  const PREFIX = toUpper(snakeCase(Class.name))
-  const ACTION = toUpper(action)
+  const PREFIX = _.toUpper(_.snakeCase(Class.name))
+  const ACTION = _.toUpper(_.snakeCase(action))
 
   const AJAX_REQUEST = `${PREFIX}_${ACTION}_REQUEST`
   const AJAX_SUCCESS = `${PREFIX}_${ACTION}_SUCCESS`

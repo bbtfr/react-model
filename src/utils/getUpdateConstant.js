@@ -1,6 +1,5 @@
-import toUpper from 'lodash/toUpper'
-import snakeCase from 'lodash/snakeCase'
+import _ from 'lodash'
 
 export default function getUpdateConstants(Class) {
-  return `${toUpper(snakeCase(Class.name))}_UPDATE`
+  return `${_.toUpper(_.snakeCase(Class.name))}_UPDATE`
 }

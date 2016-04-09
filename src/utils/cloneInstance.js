@@ -3,7 +3,7 @@ export function cloneInstance() {
   for (let property of Object.getOwnPropertyNames(this)) {
     clone[property] = this[property]
   }
-  if (clone.models) clone.models = clone.models.slice()
+  if (this.isCollection) clone.models = this.models.slice()
   return clone
 }
 
@@ -11,5 +11,5 @@ export function cloneInstanceFrom(source) {
   for (let property of Object.getOwnPropertyNames(source)) {
     this[property] = source[property]
   }
-  if (this.models) this.models = this.models.slice()
+  if (this.isCollection) this.models = this.models.slice()
 }
