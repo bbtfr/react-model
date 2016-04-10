@@ -29,6 +29,17 @@ class Main extends Component {
     this.props.labels.fetch()
   }
 
+  renderLabel(label) {
+    return (
+      <span
+        key={label.cid}
+        className={`label label-${label.get('style')}`}
+        >
+        {label.get('title')}
+      </span>
+    )
+  }
+
   render() {
     const labels = window.labels = this.props.labels
     return (
@@ -37,16 +48,7 @@ class Main extends Component {
         transitionEnterTimeout={500}
         transitionLeaveTimeout={300}
         >
-        {
-          labels.map((model, index) =>
-            <span
-              key={model.cid}
-              className={`label label-${model.get('style')}`}
-              >
-              {model.get('title')}
-            </span>
-          )
-        }
+        {labels.map(this.renderLabel)}
       </CSSTransitionGroup>
     )
   }
