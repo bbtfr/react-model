@@ -9,6 +9,10 @@ ReactModel provides a Model / Collection layer for React projects, it plays nice
 with Flux, Redux or other Flux like system.
 It's strongly inspired by Backbone.Model / Backbone.Collection
 
+Live Demo
+---
+http://bbtfr.github.io/react-model
+
 Installation
 ---
 
