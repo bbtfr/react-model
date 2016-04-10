@@ -5,6 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "build": "rimraf lib && babel ./src -d lib --ignore '__tests__'",
+    "build:demo": "cd demo && webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
