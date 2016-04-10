@@ -1,0 +1,7 @@
+[
+  { "title": "Label 1", "style": "primary" },
+  { "title": "Label 2", "style": "success" },
+  { "title": "Label 3", "style": "info" },
+  { "title": "Label 4", "style": "warning" },
+  { "title": "Label 5", "style": "danger" }
+]

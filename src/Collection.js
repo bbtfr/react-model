@@ -10,9 +10,6 @@ import { cloneInstance, cloneInstanceFrom } from './utils/cloneInstance'
 export default class Collection {
 
   constructor(models = []) {
-    this.model = Model
-    this.url = this.model.urlRoot
-
     if (models instanceof Collection) {
       this.cloneFrom(models)
     } else {
@@ -21,7 +18,7 @@ export default class Collection {
   }
 
   new(model) {
-    model = model instanceof this.model ? model : new this.model(model)
+    model = model instanceof this.constructor.Model ? model : new this.constructor.Model(model)
     if (!model.cid) model.cid = _.uniqueId('c')
     model.rid = this.rid
     model.dispatch = this.dispatch
@@ -36,8 +33,8 @@ export default class Collection {
   }
 
   modelId(model) {
-    return model instanceof this.model ? model.id :
-      model[this.model.prototype.idAttribute]
+    return model instanceof this.constructor.Model ? model.id :
+      model[this.constructor.Model.idAttribute]
   }
 
   @updateAction
@@ -88,9 +85,13 @@ export default class Collection {
     this.models = _.map(models, model => this.new(model))
   }
 
+  url() {
+    return this.constructor.url || this.constructor.Model.urlRoot
+  }
+
   @ajaxAction
   fetch() {
-    return fetch(this.url)
+    return fetch(this.url())
       .then(this.parse)
   }
 
@@ -131,6 +132,7 @@ _.forEach([
   })
 })
 
+Collection.Model = Model
 Collection.prototype.isCollection = true
 Collection.prototype.clone = cloneInstance
 Collection.prototype.cloneFrom = cloneInstanceFrom

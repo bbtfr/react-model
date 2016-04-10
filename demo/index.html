@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>ReactModel Demo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.css">
+    <style>
+      #app {
+        margin-top: 60px;
+      }
+
+      .label {
+        font-size: 150%;
+        margin-right: 0.4em;
+      }
+
+      .label-enter {
+        opacity: 0.01;
+      }
+      .label-enter.label-enter-active {
+        opacity: 1;
+        transition: opacity 500ms ease-in;
+      }
+
+      .label-leave {
+        opacity: 1;
+      }
+      .label-leave.label-leave-active {
+        opacity: 0.01;
+        transition: opacity 300ms ease-in;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="page-header">ReactModel</h1>
+      <blockquote>
+        <p>
+          You can change the labels by running commands in you browser console, e.g.:
+          <ul>
+            <li><code>labels.push({ title: "New Label" })</code></li>
+            <li><code>labels.unshift({ title: "Another Label", style: "danger" })</code></li>
+            <li><code>labels.pop()</code></li>
+            <li><code>labels.shift()</code></li>
+            <li><code>labels.reset()</code></li>
+          </ul>
+        </p>
+      </blockquote>
+      <div id="app"></div>
+    </div>
+    <script type="text/javascript" src="./bundle.js"></script>
+  </body>
+</html>

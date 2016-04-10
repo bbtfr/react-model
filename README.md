@@ -29,11 +29,11 @@ For example, use it with Redux:
 import { Model, Collection } from 'react-model'
 
 class MyModel extends Model {
-  urlRoot = "/path/to/fetch/data"
+  static urlRoot = "/path/to/fetch/data"
 }
 
 class MyCollection extends Collection {
-  model = MyModel
+  static model = MyModel
 }
 
 

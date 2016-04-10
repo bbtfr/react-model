@@ -4,9 +4,7 @@
   "description": "The missing Model for React.js",
   "main": "src/index.js",
   "scripts": {
-    "build": "npm run build-cjs && npm run build-es6",
-    "build-cjs": "rimraf lib && babel ./src -d lib --ignore '__tests__'",
-    "build-es6": "rimraf es6 && babel ./src -d es6 --blacklist=es6.modules --ignore '__tests__'",
+    "build": "rimraf lib && babel ./src -d lib --ignore '__tests__'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

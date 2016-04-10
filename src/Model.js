@@ -24,8 +24,8 @@ export default class Model {
   @updateAction
   @keepWithoutDispatchMethod
   reset(attributes) {
-    this.attributes = _.assign({}, this.defaults, attributes)
-    this.id = attributes[this.idAttribute]
+    this.attributes = _.assign({}, this.constructor.defaults, attributes)
+    this.id = attributes[this.constructor.idAttribute]
     this.changed = true
   }
 
@@ -47,7 +47,8 @@ export default class Model {
   }
 
   url() {
-    const { id, urlRoot } = this
+    const { id } = this
+    const { urlRoot } = this.constructor
     return urlRoot && (id ? `${urlRoot}/${id}` : urlRoot)
   }
 
@@ -101,10 +102,10 @@ _.forEach([
   })
 })
 
+Model.idAttribute = "id"
+Model.defaults = {}
 Model.prototype.isModel = true
 Model.prototype.clone = cloneInstance
 Model.prototype.cloneFrom = cloneInstanceFrom
 Model.prototype.clear = _.partial(Model.prototype.reset, {})
 Model.prototype.save = Model.prototype.sync
-Model.prototype.idAttribute = "id"
-Model.prototype.defaults = {}

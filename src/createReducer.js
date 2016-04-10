@@ -36,7 +36,7 @@ function handleAjaxAction(state, action, CONSTANTS) {
 
 export default function createReducer(Collection) {
   const initialState = new Collection()
-  const Model = initialState.model
+  const Model = Collection.Model
   const reducerId = initialState.rid = _.uniqueId('r')
 
   const COLLECTION_FETCH = getAjaxConstants(Collection, "fetch")

@@ -1,5 +1,6 @@
 node_modules
-es6
 lib
-umd
+static
 coverage
+
+.DS_Store
