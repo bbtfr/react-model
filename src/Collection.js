@@ -10,18 +10,13 @@ import { cloneInstance, cloneInstanceFrom } from './utils/cloneInstance'
 export default class Collection {
 
   constructor(models = []) {
-    if (models instanceof Collection) {
-      this.cloneFrom(models)
-    } else {
-      this.resetWithoutDispatch(models)
-    }
+    this.resetWithoutDispatch(models)
   }
 
   new(model) {
     model = model instanceof this.constructor.Model ? model : new this.constructor.Model(model)
     if (!model.cid) model.cid = _.uniqueId('c')
-    model.rid = this.rid
-    model.dispatch = this.dispatch
+    model.dispatch = this.modelDispatch
     return model
   }
 
@@ -44,6 +39,7 @@ export default class Collection {
   }
 
   @updateAction
+  @keepWithoutDispatchMethod
   add(...models) {
     this.resetWithoutDispatch(_.concat(this.models, ...models))
     this.sortWithoutDispatch()
@@ -82,6 +78,16 @@ export default class Collection {
   @updateAction
   @keepWithoutDispatchMethod
   reset(models) {
+    if (models instanceof Collection) {
+      this.cloneFrom(models)
+    } else {
+      this.resetModelsWithoutDispatch(models)
+    }
+  }
+
+  @updateAction
+  @keepWithoutDispatchMethod
+  resetModels(models) {
     this.models = _.map(models, model => this.new(model))
   }
 
@@ -128,12 +134,11 @@ _.forEach([
   Collection.prototype[name] = updateMethodDecorator(function() {
     const models = this.models.slice()
     models[name](...arguments)
-    return this.resetWithoutDispatch(models)
+    return this.resetModelsWithoutDispatch(models)
   })
 })
 
 Collection.Model = Model
-Collection.prototype.isCollection = true
 Collection.prototype.clone = cloneInstance
 Collection.prototype.cloneFrom = cloneInstanceFrom
 Collection.prototype.pluck = Collection.prototype.map

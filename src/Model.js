@@ -9,8 +9,8 @@ import { cloneInstance, cloneInstanceFrom } from './utils/cloneInstance'
 export default class Model {
 
   constructor(attributes = {}) {
-    this.reset(attributes)
-    this.resetPreviousAttributes()
+    this.resetWithoutDispatch(attributes)
+    this.resetPreviousAttributesWithoutDispatch()
   }
 
   isNew() {
@@ -24,11 +24,23 @@ export default class Model {
   @updateAction
   @keepWithoutDispatchMethod
   reset(attributes) {
+    if (attributes instanceof Model) {
+      this.cloneFrom(attributes)
+    } else {
+      this.resetAttributesWithoutDispatch(attributes)
+    }
+  }
+
+  @updateAction
+  @keepWithoutDispatchMethod
+  resetAttributes(attributes) {
     this.attributes = _.assign({}, this.constructor.defaults, attributes)
     this.id = attributes[this.constructor.idAttribute]
     this.changed = true
   }
 
+  @updateAction
+  @keepWithoutDispatchMethod
   resetPreviousAttributes() {
     this.previousAttributes = _.clone(this.attributes)
     this.changed = false
@@ -54,14 +66,14 @@ export default class Model {
 
   @ajaxAction
   fetch() {
-    this.resetPreviousAttributes()
+    this.resetPreviousAttributesWithoutDispatch()
     return fetch(this.url())
       .then(this.parse)
   }
 
   @ajaxAction
   sync() {
-    this.resetPreviousAttributes()
+    this.resetPreviousAttributesWithoutDispatch()
     const method = this.isNew() ? 'post' : 'put'
     return fetch(this.url(), { method: method })
       .then(this.parse)
@@ -69,7 +81,7 @@ export default class Model {
 
   @ajaxAction
   destroy() {
-    this.resetPreviousAttributes()
+    this.resetPreviousAttributesWithoutDispatch()
     return fetch(this.url(), { method: 'delete' })
       .then(this.parse)
   }
@@ -98,13 +110,12 @@ _.forEach([
   Model.prototype[name] = updateMethodDecorator(function() {
     const attributes = _.clone(this.attributes)
     _[name](attributes, ...arguments)
-    return this.resetWithoutDispatch(attributes)
+    return this.resetAttributesWithoutDispatch(attributes)
   })
 })
 
 Model.idAttribute = "id"
 Model.defaults = {}
-Model.prototype.isModel = true
 Model.prototype.clone = cloneInstance
 Model.prototype.cloneFrom = cloneInstanceFrom
 Model.prototype.clear = _.partial(Model.prototype.reset, {})
