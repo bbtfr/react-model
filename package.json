@@ -23,10 +23,6 @@
     "url": "https://github.com/bbtfr/react-model/issues"
   },
   "homepage": "https://github.com/bbtfr/react-model#readme",
-  "dependencies": {
-    "lodash": "^4.11.1",
-    "react": ">= 13.0.0"
-  },
   "devDependencies": {
     "babel-cli": "^6.7.5",
     "babel-core": "^6.7.6",
@@ -49,5 +45,9 @@
     "rimraf": "^2.5.2",
     "webpack": "^1.13.0",
     "webpack-dev-server": "^1.14.1"
+  },
+  "peerDependencies": {
+    "lodash": ">= 3.0.0",
+    "react": ">= 13.0.0"
   }
 }
